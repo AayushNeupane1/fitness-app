@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gym Platform</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="hero">
+        <p class="eyebrow">Gym Platform</p>
+        <h1>One app for admin and member operations.</h1>
+        <p class="lede">
+          Local-first foundation with auth, RBAC, member management, attendance,
+          plans, and offers.
+        </p>
+        <div class="badge-row">
+          <span>Auth service</span>
+          <span>API service</span>
+          <span>Role-based access</span>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <section class="card">
+          <h2>Sign in</h2>
+          <p>Use <strong>admin@gym.local / admin123</strong> or <strong>member@gym.local / member123</strong>.</p>
+          <form id="loginForm" class="stack">
+            <label>
+              Email
+              <input id="email" name="email" type="email" value="admin@gym.local" />
+            </label>
+            <label>
+              Password
+              <input id="password" name="password" type="password" value="admin123" />
+            </label>
+            <button type="submit">Sign in</button>
+          </form>
+          <p id="loginStatus" class="muted"></p>
+        </section>
+
+        <section class="card" id="dashboardCard" hidden>
+          <div class="card-head">
+            <div>
+              <h2 id="welcomeTitle">Dashboard</h2>
+              <p id="roleLine" class="muted"></p>
+            </div>
+            <button id="logoutButton" class="secondary">Log out</button>
+          </div>
+          <div id="dashboard"></div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

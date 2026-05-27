@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "echo \"auth dev server\"",
-    "build": "echo \"auth build\"",
-    "lint": "echo \"auth lint\""
+    "dev": "node server.js",
+    "start": "node server.js"
   }
 }

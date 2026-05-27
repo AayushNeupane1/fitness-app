@@ -9,9 +9,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm --parallel dev",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "test": "pnpm -r test"
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "node apps/web/server.js",
+    "dev:api": "node apps/api/server.js",
+    "dev:auth": "node services/auth/server.js",
+    "build": "node -e \"console.log('No build step yet; the MVP runs directly on Node')\"",
+    "lint": "node -e \"console.log('No lint step yet')\"",
+    "test": "node -e \"console.log('No test suite yet')\""
   }
 }

@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "echo \"api dev server\"",
-    "build": "echo \"api build\"",
-    "lint": "echo \"api lint\""
+    "dev": "node server.js",
+    "start": "node server.js"
   }
 }
