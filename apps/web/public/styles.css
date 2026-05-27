@@ -2,8 +2,8 @@
   color-scheme: dark;
   --bg: #0b0c09;
   --panel: #262e21;
-  --card: #1c2218;
-  --border: #343c2d;
+  --card: #262e21;
+  --border: #434f38;
   --text: #bec3ac;
   --muted: #78796e;
   --accent: #434f38;
@@ -27,6 +27,39 @@ body {
   width: min(1280px, calc(100% - 32px));
   margin: 0 auto;
   padding: 24px 0 40px;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 20px;
+}
+
+.crumb,
+.crumb-divider {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.crumb {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.crumb.current {
+  background: var(--accent);
+  color: var(--cta);
+  border-color: var(--accent);
+}
+
+.crumb-divider {
+  color: var(--muted);
 }
 
 .topbar {
@@ -106,6 +139,16 @@ body {
   color: var(--bg);
 }
 
+button.is-pressed,
+.primary-link.is-pressed,
+.ghost-link.is-pressed,
+.offer-cta.is-pressed,
+.nav-links a.is-pressed {
+  background: var(--cta);
+  color: var(--bg) !important;
+  border-color: var(--cta) !important;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
@@ -125,6 +168,10 @@ body.dashboard-mode .auth-panel {
 
 body.dashboard-mode .nav-links {
   display: none;
+}
+
+body.dashboard-mode .breadcrumbs {
+  margin-bottom: 16px;
 }
 
 body.dashboard-mode .dashboard-card {
@@ -372,7 +419,7 @@ button {
 }
 
 input {
-  background: #0f110d;
+  background: var(--bg);
   color: var(--cta);
 }
 
@@ -428,12 +475,121 @@ button.secondary-action {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.dashboard-shell {
+  display: grid;
+  gap: 18px;
+}
+
+.dashboard-header {
+  align-items: center;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dashboard-grid-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.roster-list {
+  max-height: 640px;
+  overflow: auto;
+}
+
+.member-pick {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.list-item.selected {
+  border-color: var(--cta);
+  box-shadow: inset 0 0 0 1px var(--cta);
+}
+
+.selected-member-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.section-gap {
+  margin-top: 8px;
+}
+
+.planner-form,
+.subscription-manager {
+  display: grid;
+  gap: 14px;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.day-card,
+.subscription-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.media-grid,
+.subscription-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.status-pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.subscription-list {
+  display: grid;
+  gap: 12px;
+}
+
+textarea,
+select {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  font: inherit;
+  background: var(--bg);
+  color: var(--cta);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
 .metric {
   border-radius: 8px;
   padding: 18px;
   display: grid;
   gap: 8px;
-  background: #1e261a;
+  background: var(--panel);
   border-left: 4px solid var(--accent);
 }
 
@@ -456,7 +612,7 @@ button.secondary-action {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
-  background: #1a2017;
+  background: var(--panel);
 }
 
 .profile-panel {
@@ -482,7 +638,7 @@ button.secondary-action {
   border-radius: 8px;
   padding: 10px 12px;
   color: var(--text);
-  background: #1a2017;
+  background: var(--panel);
 }
 
 .offers-panel {
@@ -509,6 +665,15 @@ button.secondary-action {
   gap: 12px;
 }
 
+@media (max-width: 1180px) {
+  .dashboard-grid-three,
+  .planner-grid,
+  .media-grid,
+  .subscription-dates {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1024px) {
   .layout,
   .grid.metrics,
@@ -517,7 +682,11 @@ button.secondary-action {
   .stack.compact,
   .offer-grid,
   .metric-grid,
-  .dashboard-grid {
+  .dashboard-grid,
+  .dashboard-grid-three,
+  .planner-grid,
+  .media-grid,
+  .subscription-dates {
     grid-template-columns: 1fr;
   }
 
