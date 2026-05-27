@@ -1,0 +1,10 @@
+{
+  "name": "@gym/worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo \"worker dev\"",
+    "build": "echo \"worker build\"",
+    "lint": "echo \"worker lint\""
+  }
+}

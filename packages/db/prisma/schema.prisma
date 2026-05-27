@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+  TRAINER
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRING
+  EXPIRED
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          UserRole
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  member        Member?
+  refreshTokens RefreshToken[]
+}
+
+model Member {
+  id              String           @id @default(cuid())
+  userId          String?          @unique
+  user            User?            @relation(fields: [userId], references: [id])
+  fullName        String
+  phone           String?
+  dateOfBirth     DateTime?
+  address         String?
+  joinedAt        DateTime         @default(now())
+  attendance      Attendance[]
+  subscriptions   Subscription[]
+  exercisePlans   ExercisePlan[]
+  dietPlans       DietPlan[]
+}
+
+model Attendance {
+  id         String   @id @default(cuid())
+  memberId   String
+  member     Member   @relation(fields: [memberId], references: [id])
+  checkedInAt DateTime @default(now())
+  status     String
+  createdAt  DateTime @default(now())
+}
+
+model Subscription {
+  id            String              @id @default(cuid())
+  memberId      String
+  member        Member              @relation(fields: [memberId], references: [id])
+  startsAt      DateTime
+  endsAt        DateTime
+  status        SubscriptionStatus  @default(ACTIVE)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model ExercisePlan {
+  id          String   @id @default(cuid())
+  memberId    String
+  member      Member   @relation(fields: [memberId], references: [id])
+  title       String
+  description String?
+  assignedAt  DateTime @default(now())
+}
+
+model DietPlan {
+  id          String   @id @default(cuid())
+  memberId    String
+  member      Member   @relation(fields: [memberId], references: [id])
+  title       String
+  description String?
+  assignedAt  DateTime @default(now())
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  activeFrom  DateTime
+  activeTo    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  tokenHash  String
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime @default(now())
+}

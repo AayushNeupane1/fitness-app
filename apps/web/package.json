@@ -1,0 +1,10 @@
+{
+  "name": "@gym/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo \"web dev server\"",
+    "build": "echo \"web build\"",
+    "lint": "echo \"web lint\""
+  }
+}

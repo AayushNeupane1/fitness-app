@@ -1,0 +1,9 @@
+{
+  "name": "@gym/db",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "generate": "echo \"prisma generate\"",
+    "migrate": "echo \"prisma migrate\""
+  }
+}
