@@ -11,6 +11,7 @@ const state = {
       name: 'Member User',
       email: 'member@gym.local',
       role: 'member',
+      goal: 'Build consistency and strength',
       attendance: [{ date: '2026-05-27', status: 'present' }],
       exercisePlan: 'Upper body strength',
       dietPlan: 'High protein meal plan',
@@ -74,6 +75,26 @@ function requireRole(req, allowedRoles) {
   return user;
 }
 
+function ensureMemberProfile(user, goal = '') {
+  let member = state.members.find((item) => item.email === user.email);
+
+  if (!member) {
+    member = {
+      id: `member-${Date.now()}`,
+      name: user.name,
+      email: user.email,
+      role: 'member',
+      goal,
+      attendance: [],
+      exercisePlan: '',
+      dietPlan: '',
+    };
+    state.members.push(member);
+  }
+
+  return member;
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
@@ -101,6 +122,21 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (error) {
       sendJson(res, 401, { message: 'Unauthorized' });
+    }
+    return;
+  }
+
+  if (req.url === '/member/profile' && req.method === 'POST') {
+    try {
+      const user = authenticate(req);
+      const body = await readJson(req);
+      const member = ensureMemberProfile(user, body.goal || '');
+      member.name = user.name || member.name;
+      member.goal = body.goal || member.goal || '';
+
+      sendJson(res, 200, { member });
+    } catch (error) {
+      sendJson(res, error.statusCode || 401, { message: error.message || 'Unauthorized' });
     }
     return;
   }
@@ -138,6 +174,7 @@ const server = http.createServer(async (req, res) => {
         name: body.name,
         email: body.email,
         role: 'member',
+        goal: body.goal || '',
         attendance: [],
         exercisePlan: body.exercisePlan || '',
         dietPlan: body.dietPlan || '',
@@ -192,11 +229,7 @@ const server = http.createServer(async (req, res) => {
   if (req.url === '/member/dashboard' && req.method === 'GET') {
     try {
       const user = requireRole(req, ['member']);
-      const member = state.members.find((item) => item.email === user.email);
-      if (!member) {
-        sendJson(res, 404, { message: 'Member profile not found' });
-        return;
-      }
+      const member = ensureMemberProfile(user);
       sendJson(res, 200, { member, offers: state.offers });
     } catch (error) {
       sendJson(res, error.statusCode || 401, { message: error.message || 'Unauthorized' });

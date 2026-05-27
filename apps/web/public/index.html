@@ -3,47 +3,131 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gym Platform</title>
+    <title>Zeon Fitness</title>
     <link rel="stylesheet" href="/styles.css" />
     <script defer src="/app.js"></script>
   </head>
   <body>
-    <div class="shell">
-      <aside class="hero">
-        <p class="eyebrow">Gym Platform</p>
-        <h1>One app for admin and member operations.</h1>
-        <p class="lede">
-          Local-first foundation with auth, RBAC, member management, attendance,
-          plans, and offers.
-        </p>
-        <div class="badge-row">
-          <span>Auth service</span>
-          <span>API service</span>
-          <span>Role-based access</span>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-mark">ZF</span>
+          <div>
+            <p class="brand-name">Zeon Fitness</p>
+            <p class="brand-subtitle">Member management for modern gyms</p>
+          </div>
         </div>
-      </aside>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#offers">Offers</a>
+          <a href="#authPanel">Login</a>
+          <a href="#authPanel" class="nav-cta">Sign up</a>
+        </nav>
+      </header>
 
-      <main class="panel">
-        <section class="card">
-          <h2>Sign in</h2>
-          <p>Use <strong>admin@gym.local / admin123</strong> or <strong>member@gym.local / member123</strong>.</p>
-          <form id="loginForm" class="stack">
-            <label>
-              Email
-              <input id="email" name="email" type="email" value="admin@gym.local" />
-            </label>
-            <label>
-              Password
-              <input id="password" name="password" type="password" value="admin123" />
-            </label>
-            <button type="submit">Sign in</button>
-          </form>
-          <p id="loginStatus" class="muted"></p>
+      <main class="layout">
+        <section class="hero public-section" id="home">
+          <p class="eyebrow">Operate the floor with clarity</p>
+          <h1>Premium gym software for serious athletes and disciplined operators.</h1>
+          <p class="lede">
+            Zeon Fitness gives gyms a tactical-organic control layer for signups, plans,
+            attendance, and offers. The product feels premium, precise, and built for real floor use.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-link" href="#authPanel">Create account</a>
+            <a class="ghost-link" href="#offers">View offers</a>
+          </div>
+
+          <div class="feature-grid" id="about">
+            <article>
+              <strong>Clean onboarding</strong>
+              <p>Fast signup and login without a cluttered consumer feel.</p>
+            </article>
+            <article>
+              <strong>Role separation</strong>
+              <p>Admins and members open different dashboards automatically.</p>
+            </article>
+            <article>
+              <strong>Member offers</strong>
+              <p>Promotions and renewals live inside the member journey.</p>
+            </article>
+          </div>
+
+          <div class="badge-row">
+            <span>Dark tactical-organic aesthetic</span>
+            <span>Separate admin and member dashboards</span>
+            <span>Signup, login, and offers in one flow</span>
+          </div>
         </section>
 
-        <section class="card" id="dashboardCard" hidden>
+        <section class="offers-strip public-section" id="offers">
+          <div class="section-head compact">
+            <div>
+              <p class="eyebrow small">Offers</p>
+              <h2>Current member offers</h2>
+            </div>
+          </div>
+          <div class="offer-grid" id="landingOffers"></div>
+        </section>
+
+        <section id="authPanel" class="auth-panel public-section">
+          <section class="card signup-card">
+            <div class="section-head">
+              <p class="eyebrow small">Get started</p>
+              <h2>Create your Zeon account</h2>
+            </div>
+            <form id="signupForm" class="stack">
+              <label>
+                Full name
+                <input id="signupName" name="name" type="text" placeholder="Alex Morgan" required />
+              </label>
+              <label>
+                Email
+                <input id="signupEmail" name="email" type="email" placeholder="alex@zeonfitness.com" required />
+              </label>
+              <label>
+                Password
+                <input id="signupPassword" name="password" type="password" placeholder="Create a password" required />
+              </label>
+              <label>
+                Training goal
+                <input id="signupGoal" name="goal" type="text" placeholder="Lose weight, gain strength, improve endurance" />
+              </label>
+              <button type="submit">Sign up</button>
+            </form>
+            <p id="signupStatus" class="muted"></p>
+          </section>
+
+          <section class="card login-card">
+            <div class="section-head">
+              <p class="eyebrow small">Already a member?</p>
+              <h2>Sign in</h2>
+            </div>
+            <p class="card-copy">
+              Use <strong>admin@gym.local / admin123</strong> for admin or
+              <strong>member@gym.local / member123</strong> for member access.
+            </p>
+            <form id="loginForm" class="stack">
+              <label>
+                Email
+                <input id="email" name="email" type="email" value="admin@gym.local" />
+              </label>
+              <label>
+                Password
+                <input id="password" name="password" type="password" value="admin123" />
+              </label>
+              <button type="submit" class="secondary-action">Sign in</button>
+            </form>
+            <p id="loginStatus" class="muted"></p>
+          </section>
+        </section>
+
+        <section class="card dashboard-card dashboard-view" id="dashboardCard" hidden>
           <div class="card-head">
             <div>
+              <p class="eyebrow small">Dashboard</p>
               <h2 id="welcomeTitle">Dashboard</h2>
               <p id="roleLine" class="muted"></p>
             </div>

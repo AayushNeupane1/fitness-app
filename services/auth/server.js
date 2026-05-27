@@ -22,6 +22,10 @@ const users = [
   },
 ];
 
+function findUserByEmail(email) {
+  return users.find((user) => user.email === email);
+}
+
 function sendJson(res, statusCode, body) {
   const payload = JSON.stringify(body);
   res.writeHead(statusCode, {
@@ -113,6 +117,54 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 400, { message: 'Invalid request body' });
       return;
     }
+  }
+
+  if (req.url === '/register' && req.method === 'POST') {
+    try {
+      const body = await readJson(req);
+      if (!body.name || !body.email || !body.password) {
+        sendJson(res, 400, { message: 'Name, email, and password are required' });
+        return;
+      }
+
+      if (findUserByEmail(body.email)) {
+        sendJson(res, 409, { message: 'That email is already registered' });
+        return;
+      }
+
+      const user = {
+        id: `user-${Date.now()}`,
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        role: 'member',
+      };
+      users.push(user);
+
+      const token = createToken(
+        {
+          sub: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+        JWT_SECRET,
+        ACCESS_TOKEN_TTL_SECONDS,
+      );
+
+      sendJson(res, 201, {
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (error) {
+      sendJson(res, 400, { message: 'Invalid request body' });
+    }
+    return;
   }
 
   if (req.url === '/me' && req.method === 'GET') {

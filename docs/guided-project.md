@@ -18,48 +18,38 @@ This is the execution order for building the gym platform in a way that stays pr
 - Keep auth separate from business logic
 - Keep the frontend and backend contracts documented before coding
 
-## Phase 1: Create accounts
+## Phase 1: Build the local MVP
 
-Create these accounts before building anything serious.
+### What to create
 
-### Required accounts
-
-- GitHub for source control and collaboration
-- Cloud provider account such as AWS, Azure, or GCP
-- Managed PostgreSQL account or service
-- Redis service account or managed cache
-- Email provider account such as SendGrid, Resend, or Postmark
-- Object storage account such as S3, Azure Blob, or Cloud Storage
-- Domain registrar account
-- DNS account if separate from registrar
-- Error tracking account such as Sentry
-- CI/CD platform account if not using cloud-native pipelines
-- Secret manager access such as AWS Secrets Manager, Azure Key Vault, or GCP Secret Manager
+- A browser-based frontend for admin and member flows
+- A core backend API
+- A dedicated auth service
+- Role-based access control with admin and member roles
+- In-memory data storage for the first working version
 
 ### What to change in the project
 
-- Add `.env` values for each service
-- Add cloud resource names and URLs to documentation
-- Prepare secret placeholders in `.env.example`
-- Prepare separate configuration for local, staging, and production
+- Keep the app self-contained and runnable on one machine
+- Use a shared token format between auth and API
+- Remove dependency on cloud accounts for the first build
+- Make login, RBAC, and dashboard data flow end to end
 
-## Phase 2: Setup local infrastructure
+## Phase 2: Add persistence later
 
 ### What to create
 
 - PostgreSQL for application data
 - Redis for queues and background jobs
-- Mailhog or a sandbox email inbox for testing
-- Docker Compose for local development
+- A worker service for background tasks later
 
 ### What to change in the project
 
-- Connect the database layer to PostgreSQL
-- Connect the job queue to Redis
-- Add email worker configuration
-- Add environment validation so missing values fail fast
+- Replace in-memory storage with a database layer
+- Add persistence for members, attendance, and plans
+- Add environment validation once real services are introduced
 
-## Phase 3: Build identity first
+## Phase 3: Expand identity
 
 ### What to create
 
@@ -149,14 +139,11 @@ Create these accounts before building anything serious.
 
 ## Recommended first implementation order
 
-1. Create cloud accounts and secrets access
-2. Stand up PostgreSQL, Redis, and email testing locally
-3. Implement auth service
-4. Implement core API member and attendance features
-5. Implement expiry email worker
-6. Build the admin dashboard
-7. Build the member dashboard
-8. Add production hardening and deployment
+1. Build the local frontend, auth service, and API together
+2. Verify RBAC with admin and member logins
+3. Add PostgreSQL persistence later
+4. Add Redis, background jobs, and notifications later
+5. Add cloud services only after the app works locally
 
 ## Practical rule
 

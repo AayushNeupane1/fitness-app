@@ -1,13 +1,19 @@
 const AUTH_URL = 'http://localhost:4001';
 const API_URL = 'http://localhost:4000';
 
+const authPanel = document.getElementById('authPanel');
+const signupForm = document.getElementById('signupForm');
+const signupStatus = document.getElementById('signupStatus');
 const loginForm = document.getElementById('loginForm');
 const loginStatus = document.getElementById('loginStatus');
 const dashboardCard = document.getElementById('dashboardCard');
 const dashboard = document.getElementById('dashboard');
+const landingOffers = document.getElementById('landingOffers');
 const welcomeTitle = document.getElementById('welcomeTitle');
 const roleLine = document.getElementById('roleLine');
 const logoutButton = document.getElementById('logoutButton');
+const publicSections = () => document.querySelectorAll('.public-section');
+const dashboardView = document.querySelector('.dashboard-view');
 
 function getToken() {
   return localStorage.getItem('gym-token');
@@ -19,6 +25,60 @@ function setToken(token) {
 
 function clearToken() {
   localStorage.removeItem('gym-token');
+}
+
+function renderLandingOffers() {
+  const offers = [
+    {
+      title: 'First Month Discount',
+      description: 'New members get 20% off their first month.',
+      cta: 'Join now',
+    },
+    {
+      title: 'Strength Package',
+      description: 'Built for serious lifters who want consistent progress.',
+      cta: 'See details',
+    },
+    {
+      title: 'Recovery Access',
+      description: 'Priority recovery and mobility access for premium members.',
+      cta: 'Upgrade membership',
+    },
+  ];
+
+  landingOffers.innerHTML = offers
+    .map(
+      (offer) => `
+        <article class="offer-card">
+          <p class="eyebrow small">Offer</p>
+          <h3>${offer.title}</h3>
+          <p>${offer.description}</p>
+          <a class="offer-cta" href="#authPanel">${offer.cta}</a>
+        </article>
+      `,
+    )
+    .join('');
+}
+
+function showAuthPanel() {
+  document.body.classList.remove('dashboard-mode');
+  window.location.hash = 'home';
+  publicSections().forEach((section) => {
+    section.hidden = false;
+  });
+  authPanel.hidden = false;
+  dashboardCard.hidden = true;
+}
+
+function showDashboardPanel(role) {
+  document.body.classList.add('dashboard-mode');
+  window.location.hash = role === 'admin' ? 'admin-dashboard' : 'member-dashboard';
+  publicSections().forEach((section) => {
+    section.hidden = true;
+  });
+  authPanel.hidden = true;
+  dashboardCard.hidden = false;
+  dashboardView.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function request(url, options = {}) {
@@ -41,44 +101,59 @@ function renderAdmin(view) {
   const overview = view.overview || {};
 
   dashboard.innerHTML = `
-    <div class="grid two">
+    <div class="metric-grid">
       <div class="metric"><span>Total members</span><strong>${overview.totalMembers || 0}</strong></div>
       <div class="metric"><span>Total offers</span><strong>${overview.totalOffers || 0}</strong></div>
+      <div class="metric"><span>Attendance records</span><strong>${overview.attendanceRecords || 0}</strong></div>
     </div>
 
-    <section class="subcard">
-      <h3>Add member</h3>
-      <form id="memberForm" class="stack compact">
-        <input name="name" placeholder="Member name" required />
-        <input name="email" type="email" placeholder="Member email" required />
-        <input name="exercisePlan" placeholder="Exercise plan" />
-        <input name="dietPlan" placeholder="Diet plan" />
-        <button type="submit">Create member</button>
-      </form>
-    </section>
+    <div class="dashboard-grid">
+      <section class="subcard">
+        <div class="section-head compact">
+          <div>
+            <p class="eyebrow small">Admin control</p>
+            <h3>Add member</h3>
+          </div>
+        </div>
+        <form id="memberForm" class="stack compact">
+          <input name="name" placeholder="Member name" required />
+          <input name="email" type="email" placeholder="Member email" required />
+          <input name="goal" placeholder="Training goal" />
+          <input name="exercisePlan" placeholder="Exercise plan" />
+          <input name="dietPlan" placeholder="Diet plan" />
+          <button type="submit">Create member</button>
+        </form>
+      </section>
 
-    <section class="subcard">
-      <h3>Members</h3>
-      <div class="list">
-        ${members
-          .map(
-            (member) => `
-              <article class="list-item">
-                <div>
-                  <strong>${member.name}</strong>
-                  <p class="muted">${member.email}</p>
-                  <p class="muted">Exercise: ${member.exercisePlan || 'Not assigned'}</p>
-                  <p class="muted">Diet: ${member.dietPlan || 'Not assigned'}</p>
-                </div>
-                <div class="actions">
-                  <button data-attendance="${member.id}">Mark attendance</button>
-                </div>
-              </article>
-            `,
-          )
-          .join('')}
-      </div>
-    </section>
+      <section class="subcard">
+        <div class="section-head compact">
+          <div>
+            <p class="eyebrow small">Member roster</p>
+            <h3>Members</h3>
+          </div>
+        </div>
+        <div class="list">
+          ${members
+            .map(
+              (member) => `
+                <article class="list-item">
+                  <div>
+                    <strong>${member.name}</strong>
+                    <p class="muted">${member.email}</p>
+                    <p class="muted">Goal: ${member.goal || 'Not set'}</p>
+                    <p class="muted">Exercise: ${member.exercisePlan || 'Not assigned'}</p>
+                    <p class="muted">Diet: ${member.dietPlan || 'Not assigned'}</p>
+                  </div>
+                  <div class="actions">
+                    <button data-attendance="${member.id}">Mark attendance</button>
+                  </div>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+      </section>
+    </div>
   `;
 
   document.getElementById('memberForm').addEventListener('submit', async (event) => {
@@ -110,26 +185,54 @@ function renderMember(view) {
   const offers = view.offers || [];
 
   dashboard.innerHTML = `
-    <section class="subcard">
-      <h3>Your profile</h3>
-      <p><strong>${member?.name || 'Member'}</strong></p>
-      <p class="muted">${member?.email || ''}</p>
-      <p class="muted">Exercise plan: ${member?.exercisePlan || 'Not assigned'}</p>
-      <p class="muted">Diet plan: ${member?.dietPlan || 'Not assigned'}</p>
-    </section>
+    <div class="dashboard-grid member-layout">
+      <section class="subcard profile-panel">
+        <div class="section-head compact">
+          <div>
+            <p class="eyebrow small">Member view</p>
+            <h3>Your profile</h3>
+          </div>
+        </div>
+        <p class="profile-name">${member?.name || 'Member'}</p>
+        <p class="muted">${member?.email || ''}</p>
+        <div class="profile-chip-row">
+          <span>Goal: ${member?.goal || 'Not set'}</span>
+          <span>Exercise: ${member?.exercisePlan || 'Not assigned'}</span>
+          <span>Diet: ${member?.dietPlan || 'Not assigned'}</span>
+        </div>
+      </section>
 
-    <div class="grid two">
       <section class="subcard">
-        <h3>Attendance</h3>
+        <div class="section-head compact">
+          <div>
+            <p class="eyebrow small">Movement</p>
+            <h3>Attendance</h3>
+          </div>
+        </div>
         <ul class="plain-list">
           ${attendance.map((item) => `<li>${item.date} - ${item.status}</li>`).join('') || '<li>No attendance yet</li>'}
         </ul>
       </section>
-      <section class="subcard">
-        <h3>Offers</h3>
-        <ul class="plain-list">
-          ${offers.map((offer) => `<li><strong>${offer.title}</strong><br /><span class="muted">${offer.description}</span></li>`).join('')}
-        </ul>
+
+      <section class="subcard offers-panel">
+        <div class="section-head compact">
+          <div>
+            <p class="eyebrow small">Membership</p>
+            <h3>Offers</h3>
+          </div>
+        </div>
+        <div class="offer-stack">
+          ${offers
+            .map(
+              (offer) => `
+                <article class="offer-item">
+                  <strong>${offer.title}</strong>
+                  <p>${offer.description}</p>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
       </section>
     </div>
   `;
@@ -138,7 +241,7 @@ function renderMember(view) {
 async function loadDashboard() {
   const token = getToken();
   if (!token) {
-    dashboardCard.hidden = true;
+    showAuthPanel();
     return;
   }
 
@@ -146,9 +249,10 @@ async function loadDashboard() {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  welcomeTitle.textContent = `Welcome, ${me.name}`;
+  welcomeTitle.textContent = me.role === 'admin' ? 'Admin control center' : 'Member control center';
   roleLine.textContent = `Role: ${me.role}`;
-  dashboardCard.hidden = false;
+  dashboardCard.dataset.role = me.role;
+  showDashboardPanel(me.role);
 
   if (me.role === 'admin') {
     const [overview, members] = await Promise.all([
@@ -164,6 +268,32 @@ async function loadDashboard() {
   });
   renderMember(view);
 }
+
+signupForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  signupStatus.textContent = 'Creating your Zeon account...';
+
+  try {
+    const form = new FormData(event.currentTarget);
+    const body = Object.fromEntries(form.entries());
+    const result = await request(`${AUTH_URL}/register`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+
+    setToken(result.token);
+    await request(`${API_URL}/member/profile`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${result.token}` },
+      body: JSON.stringify({ goal: body.goal }),
+    });
+
+    signupStatus.textContent = 'Your account is ready.';
+    await loadDashboard();
+  } catch (error) {
+    signupStatus.textContent = error.message;
+  }
+});
 
 loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -186,7 +316,7 @@ loginForm.addEventListener('submit', async (event) => {
 
 logoutButton.addEventListener('click', () => {
   clearToken();
-  dashboardCard.hidden = true;
+  showAuthPanel();
   dashboard.innerHTML = '';
   loginStatus.textContent = 'Logged out.';
 });
@@ -194,3 +324,5 @@ logoutButton.addEventListener('click', () => {
 loadDashboard().catch((error) => {
   loginStatus.textContent = error.message;
 });
+
+renderLandingOffers();
