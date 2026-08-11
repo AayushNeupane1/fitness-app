@@ -1,45 +1,42 @@
 # Required Setup
 
-This file lists the external accounts and project-side changes that are required before implementation can proceed cleanly.
+External accounts and project changes needed before each phase, in the order they
+actually become necessary — not all of these are needed to start.
 
-## Accounts to create
+## Needed for Phase 1 (core MVP)
 
-- GitHub
-- PostgreSQL provider such as Neon, Supabase, or managed cloud Postgres
-- Redis provider such as Upstash or managed cloud Redis
-- Email provider such as Resend, SendGrid, or Postmark
-- Object storage provider such as S3, Cloudflare R2, or Azure Blob Storage
-- Domain registrar and DNS provider such as Cloudflare
-- Error tracking provider such as Sentry
-- Secret manager such as 1Password Secrets, Doppler, or a cloud secret manager later
+- GitHub (already in use)
+- PostgreSQL provider — Neon, Supabase, or Railway all work for a single gym at this
+  scale; Neon/Supabase have generous free tiers
+- A place to deploy one Node process — Railway, Render, or Fly.io are the simplest for a
+  single Express app; no Kubernetes/Docker-orchestration needed at this scale
 
-## Information to collect from each account
+## Needed for Phase 2 (retention automation)
 
-- Login email
-- API keys or access keys
-- Connection URLs
-- Region or data center
-- Bucket or project name
-- Verified sender email for mail delivery
-- DNS nameservers and verification records
+- Email provider for transactional mail — Resend or SendGrid, need a verified sender
+  domain
+- Optional: SMS/WhatsApp provider (e.g. Twilio, or a WhatsApp Business API provider) if
+  notifications go beyond email — decide before building the notification module, since
+  it affects the `Notification.channel` design
 
-## Project changes required
+## Needed for Phase 3 (dashboards/payments)
 
-- Update `.env.example` with placeholders for every external service
-- Create local `.env` only after real credentials are available
-- Keep auth secrets separate from API secrets
-- Keep storage credentials separate from database credentials
-- Keep staging and production values separate from local values
-- Add validation so missing env vars fail fast at startup
+- v1 uses manual cash/bank dues tracking — no account needed yet
+- If/when online payment is added: eSewa or Khalti (the standard gateways in Nepal),
+  not Stripe/Razorpay, since Zeon Fitness's members are Nepal-based
 
-## First implementation order
+## Needed for Phase 5 (hardening)
 
-1. Create the external accounts above.
-2. Capture the connection values and API keys.
-3. Put only placeholders into `.env.example`.
-4. Build local infrastructure with Docker Compose.
-5. Implement auth, members, attendance, plans, and notifications.
+- Error tracking — Sentry
+- Domain + DNS — a registrar plus Cloudflare or similar
+- Secret manager — can stay as plain environment variables on the hosting provider until
+  there's a real ops team; upgrade to Doppler/1Password Secrets only when that stops
+  being enough
 
-## Rule
+## Rules
 
-Do not hardcode real credentials into the repository. Keep all secrets outside Git and load them from environment variables or a secret manager.
+- `.env.example` lists variable names only, never real values
+- Real `.env` values only ever live outside Git
+- Separate secrets per environment — local, staging, production never share a JWT secret
+  or database
+- Missing required env vars should fail the app at startup, not fail silently at runtime
